@@ -52,7 +52,7 @@ jobs:
             export CC="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang"
             export CXX="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang++"
             echo "Building for $abi ($GOARCH)..."
-            go build -o output/blobfuse2-$abi -C azure-storage-fuse/
+            go build -C azure-storage-fuse/ -o output/blobfuse2-$abi 
           done
 
       # Step 6: 上传构建产物
