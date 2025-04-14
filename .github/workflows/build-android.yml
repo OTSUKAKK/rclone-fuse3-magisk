@@ -10,11 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 2: 同步最新 Azure blobfuse2 源码
-      - name: Sync latest blobfuse2 code
-        run: |
-          git clone https://github.com/Azure/azure-storage-fuse.git azure-storage-fuse
-
+    
       # Step 3: 设置 Go 环境
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -29,31 +25,8 @@ jobs:
 
       # Step 5: 配置交叉编译环境变量并构建 Android 各平台二进制文件
       - name: Build blobfuse2 for Android
-        run: |
-          export NDK_TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
-          export CGO_ENABLED=1
+        run: build-android.sh
 
-          # 定义目标平台
-          declare -A platforms
-          platforms=(
-            ["arm64-v8a"]="aarch64-linux-android"
-            ["armeabi-v7a"]="armv7a-linux-androideabi"
-            ["x86_64"]="x86_64-linux-android"
-          )
-
-          mkdir -p output
-
-          for abi in "${!platforms[@]}"; do
-            case "$abi" in
-              "arm64-v8a") export GOARCH=arm64 ;;
-              "armeabi-v7a") export GOARCH=arm ;;
-              "x86_64") export GOARCH=amd64 ;;
-            esac
-            export CC="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang"
-            export CXX="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang++"
-            echo "Building for $abi ($GOARCH)..."
-            go build -C azure-storage-fuse/ -o output/blobfuse2-$abi 
-          done
 
       # Step 6: 上传构建产物
       - name: Upload Android binaries
