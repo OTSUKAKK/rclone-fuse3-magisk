@@ -54,8 +54,8 @@ jobs:
 
       # Step 6: 上传构建产物
       - name: Upload Android binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: blobfuse2-android-binaries
+          name: blobfuse2-android
           path: output/*
 
