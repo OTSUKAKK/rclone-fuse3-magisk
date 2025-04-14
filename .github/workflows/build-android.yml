@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 2: 同步最新 Azure blobfuse2 源码
+      - name: Sync latest blobfuse2 code
+        run: |
+          git clone https://github.com/Azure/azure-storage-fuse.git blobfuse2-src
+          rsync -av --exclude='.git' blobfuse2-src/ .
+
+      # Step 3: 设置 Go 环境
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      # Step 4: 设置 Android NDK 环境
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: 27
+
+      # Step 5: 配置交叉编译环境变量并构建 Android 各平台二进制文件
+      - name: Build blobfuse2 for Android
+        run: |
+          export NDK_TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
+          export CGO_ENABLED=1
+
+          # 定义目标平台
+          declare -A platforms
+          platforms=(
+            ["arm64-v8a"]="aarch64-linux-android"
+            ["armeabi-v7a"]="armv7a-linux-androideabi"
+            ["x86_64"]="x86_64-linux-android"
+          )
+
+          mkdir -p output
+
+          for abi in "${!platforms[@]}"; do
+            export GOARCH=$(echo $abi | grep -q "arm64" && echo "arm64" || (echo $abi | grep -q "armeabi" && echo "arm" || echo "amd64"))
+            export CC="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang"
+            export CXX="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang++"
+            echo "Building for $abi ($GOARCH)..."
+            go build -o output/blobfuse2-$abi ./...
+          done
+
+      # Step 6: 上传构建产物
+      - name: Upload Android binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: blobfuse2-android-binaries
+          path: output/*
+
