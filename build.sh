@@ -70,7 +70,8 @@ EOF
     -Dexamples=false \
     -Dtests=false \
     -Ddisable-mtab=true \
-    -Dbuildtype=release
+    -Dbuildtype=release \
+    -Drt_dep=false
 
   # 使用 ninja 编译和安装
   cd build
