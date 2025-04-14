@@ -1,44 +1,83 @@
 #!/bin/bash
 
+# 定义支持的架构
+declare -A platforms=(
+  ["arm64-v8a"]="aarch64-linux-android"
+  ["armeabi-v7a"]="armv7a-linux-androideabi"
+  ["x86"]="i686-linux-android"
+  ["x86_64"]="x86_64-linux-android"
+)
 
+# 创建必要目录
+mkdir -p output
+mkdir -p libfuse-android-output
+
+# 克隆所需仓库
 git clone https://github.com/libfuse/libfuse.git --branch fuse-3.17.x --depth 1
 git clone https://github.com/Azure/azure-storage-fuse.git --depth 1
 
-mkdir -p output
-
-# build libfuse
-cd libfuse
-
-# 配置交叉编译环境
+# 设置通用的工具链路径
 export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64
 export PATH=$TOOLCHAIN/bin:$PATH
 export SYSROOT=$TOOLCHAIN/sysroot
 
-# 以 arm64-v8a 为例，其他架构类似
-export TARGET_HOST=aarch64-linux-android
-export API=21
-export CC=$TARGET_HOST$API-clang
-export CXX=$TARGET_HOST$API-clang++
-export AR=llvm-ar
-export LD=ld.lld
-export RANLIB=llvm-ranlib
-export STRIP=llvm-strip
+# 构建 libfuse
+cd libfuse
+# libfuse 需要 meson 和 ninja 构建系统
+pip install meson ninja
 
-mkdir build && cd build
-cmake .. \
-  -DCMAKE_SYSTEM_NAME=Android \
-  -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
-  -DCMAKE_ANDROID_NDK=$ANDROID_NDK_HOME \
-  -DCMAKE_SYSTEM_VERSION=$API \
-  -DCMAKE_ANDROID_STL_TYPE=c++_static \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_SHARED_LIBS=OFF \
-  -DCMAKE_INSTALL_PREFIX=$(pwd)/../../libfuse-android-output/arm64-v8a
+# 为每个目标架构构建 libfuse
+for abi in "${!platforms[@]}"; do
+  echo "Building libfuse for $abi..."
+  
+  # 设置架构相关变量
+  export TARGET_HOST=${platforms[$abi]}
+  export API=21
+  export CC=$TARGET_HOST$API-clang
+  export CXX=$TARGET_HOST$API-clang++
+  export AR=$TOOLCHAIN/bin/llvm-ar
+  export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
+  export STRIP=$TOOLCHAIN/bin/llvm-strip
+  
+  # 清理旧构建目录
+  rm -rf build
+  mkdir -p build
+  
+  # 先生成 android_cross_file.txt
+  cat > android_cross_file.txt << EOF
+[binaries]
+c = '$CC'
+cpp = '$CXX'
+ar = '$AR'
+strip = '$STRIP'
+pkgconfig = 'pkg-config'
 
-make -j$(nproc)
-make install
-cd ../..
+[host_machine]
+system = 'android'
+cpu_family = '$(if [[ "$abi" == *"arm"* ]]; then echo "arm"; elif [[ "$abi" == *"x86"* ]]; then echo "x86"; fi)'
+cpu = '$(if [[ "$abi" == "arm64-v8a" ]]; then echo "aarch64"; elif [[ "$abi" == "armeabi-v7a" ]]; then echo "armv7a"; elif [[ "$abi" == "x86" ]]; then echo "i686"; else echo "x86_64"; fi)'
+endian = 'little'
+EOF
 
+  # 然后使用 meson 配置构建
+  meson build \
+    --cross-file=android_cross_file.txt \
+    --prefix=/workspaces/blobfuse2-android/libfuse-android-output/$abi \
+    -Dudevrulesdir=/dev/null \
+    -Dutils=false \
+    -Dexamples=false \
+    -Dtests=false \
+    -Ddisable-mtab=true \
+    -Dbuildtype=release
+
+  # 使用 ninja 编译和安装
+  cd build
+  ninja
+  ninja install
+  cd ..
+done
+
+cd ..
 
 # 交叉编译 azure-storage-fuse
 cd azure-storage-fuse
@@ -46,10 +85,25 @@ cd azure-storage-fuse
 export NDK_TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
 export CGO_ENABLED=1
 
-abi = "arm64-v8a"
-GOARCH = "arm64"
+for abi in "${!platforms[@]}"; do
+  # 设置 Go 架构
+  case "$abi" in
+    "arm64-v8a") export GOARCH=arm64 ;;
+    "armeabi-v7a") export GOARCH=arm ;;
+    "x86") export GOARCH=386 ;;
+    "x86_64") export GOARCH=amd64 ;;
+  esac
 
-export CC="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang"
-export CXX="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang++"
-echo "Building for $abi ($GOARCH)..."
-go build -o ../output/blobfuse2-$abi
+  # 设置 C/C++ 编译器
+  export CC="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang"
+  export CXX="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang++"
+  
+  # 设置 libfuse 的路径和链接选项
+  export CGO_CFLAGS="-I/workspaces/blobfuse2-android/libfuse-android-output/$abi/include"
+  export CGO_LDFLAGS="-L/workspaces/blobfuse2-android/libfuse-android-output/$abi/lib -lfuse3 -static"
+  
+  echo "Building azure-storage-fuse for $abi ($GOARCH)..."
+  go build -tags netgo -o ../output/blobfuse2-$abi
+done
+
+cd ..
