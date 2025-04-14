@@ -35,7 +35,7 @@ jobs:
 
       # Step 5: 配置交叉编译环境变量并构建 Android 各平台二进制文件
       - name: Build blobfuse2 for Android
-        run: ./build-android.sh
+        run: ./build.sh
 
       # Step 6: 上传构建产物
       - name: Upload Android binaries
