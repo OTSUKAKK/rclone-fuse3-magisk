@@ -8,9 +8,12 @@ declare -A platforms=(
   ["x86_64"]="x86_64-linux-android"
 )
 
+export API=31
+
 # 创建必要目录
 mkdir -p output
 mkdir -p libfuse-android-output
+LIB_FUSE_DIR=$(pwd)/libfuse-android-output
 
 # 克隆所需仓库
 git clone https://github.com/libfuse/libfuse.git --branch fuse-3.17.x --depth 1
@@ -32,7 +35,6 @@ for abi in "${!platforms[@]}"; do
   
   # 设置架构相关变量
   export TARGET_HOST=${platforms[$abi]}
-  export API=21
   export CC=$TARGET_HOST$API-clang
   export CXX=$TARGET_HOST$API-clang++
   export AR=$TOOLCHAIN/bin/llvm-ar
@@ -62,7 +64,7 @@ EOF
   # 然后使用 meson 配置构建
   meson build \
     --cross-file=android_cross_file.txt \
-    --prefix=/workspaces/blobfuse2-android/libfuse-android-output/$abi \
+    --prefix=${LIB_FUSE_DIR}/$abi \
     -Dudevrulesdir=/dev/null \
     -Dutils=false \
     -Dexamples=false \
@@ -95,15 +97,17 @@ for abi in "${!platforms[@]}"; do
   esac
 
   # 设置 C/C++ 编译器
-  export CC="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang"
-  export CXX="$NDK_TOOLCHAIN/${platforms[$abi]}21-clang++"
+  export CC="$NDK_TOOLCHAIN/${platforms[$abi]}${API}-clang"
+  export CXX="$NDK_TOOLCHAIN/${platforms[$abi]}${API}-clang++"
   
   # 设置 libfuse 的路径和链接选项
-  export CGO_CFLAGS="-I/workspaces/blobfuse2-android/libfuse-android-output/$abi/include"
-  export CGO_LDFLAGS="-L/workspaces/blobfuse2-android/libfuse-android-output/$abi/lib -lfuse3 -static"
+  export CGO_CFLAGS="-I${LIB_FUSE_DIR}/$abi/include"
+  export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3 -static"
   
   echo "Building azure-storage-fuse for $abi ($GOARCH)..."
-  go build -tags netgo -o ../output/blobfuse2-$abi
+  # 添加 osusergo 标签，使用纯 Go 实现替代 cgo 中对这些用户/组函数的调用
+  # go build -tags "netgo,osusergo" -ldflags="-extldflags=-static" -o ../output/blobfuse2-$abi
+  go build -o ../output/blobfuse2-$abi
 done
 
 cd ..
