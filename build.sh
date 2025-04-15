@@ -62,7 +62,7 @@ endian = 'little'
 EOF
 
   # 然后使用 meson 配置构建
-  meson build \
+  meson setup build\
     --cross-file=android_cross_file.txt \
     --prefix=${LIB_FUSE_DIR}/$abi \
     -Dudevrulesdir=/dev/null \
@@ -71,13 +71,11 @@ EOF
     -Dtests=false \
     -Ddisable-mtab=true \
     -Dbuildtype=release \
-    -Drt_dep=false
+    -Dudevrulesdir=${LIB_FUSE_DIR}/$abi/etc/udev/rules.d
 
   # 使用 ninja 编译和安装
-  cd build
-  ninja
-  ninja install
-  cd ..
+  ninja -C build
+  ninja -C build install
 done
 
 cd ..
