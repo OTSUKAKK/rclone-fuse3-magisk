@@ -73,6 +73,7 @@ EOF
     -Dtests=false \
     -Ddisable-mtab=true \
     -Dbuildtype=release \
+    -Dmulti-threaded-loop=false \
     -Dudevrulesdir=${LIB_FUSE_DIR}/$abi/etc/udev/rules.d
 
   # 使用 ninja 编译和安装
