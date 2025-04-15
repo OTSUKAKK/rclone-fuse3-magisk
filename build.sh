@@ -61,6 +61,8 @@ cpu = '$(if [[ "$abi" == "arm64-v8a" ]]; then echo "aarch64"; elif [[ "$abi" == 
 endian = 'little'
 EOF
 
+  sed -i "s/cc.find_library('rt')/cc.find_library('rt', required : false)/" lib/meson.build
+
   # 然后使用 meson 配置构建
   meson setup build\
     --cross-file=android_cross_file.txt \
@@ -76,17 +78,15 @@ EOF
   # 使用 ninja 编译和安装
   ninja -C build
   ninja -C build install
-done
 
 cd ..
 
 # 交叉编译 azure-storage-fuse
 cd azure-storage-fuse
 
-export NDK_TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
-export CGO_ENABLED=1
+  export NDK_TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
+  export CGO_ENABLED=1
 
-for abi in "${!platforms[@]}"; do
   # 设置 Go 架构
   case "$abi" in
     "arm64-v8a") export GOARCH=arm64 ;;
@@ -94,10 +94,6 @@ for abi in "${!platforms[@]}"; do
     "x86") export GOARCH=386 ;;
     "x86_64") export GOARCH=amd64 ;;
   esac
-
-  # 设置 C/C++ 编译器
-  export CC="$NDK_TOOLCHAIN/${platforms[$abi]}${API}-clang"
-  export CXX="$NDK_TOOLCHAIN/${platforms[$abi]}${API}-clang++"
   
   # 设置 libfuse 的路径和链接选项
   export CGO_CFLAGS="-I${LIB_FUSE_DIR}/$abi/include"
@@ -107,6 +103,7 @@ for abi in "${!platforms[@]}"; do
   # 添加 osusergo 标签，使用纯 Go 实现替代 cgo 中对这些用户/组函数的调用
   # go build -tags "netgo,osusergo" -ldflags="-extldflags=-static" -o ../output/blobfuse2-$abi
   go build -o ../output/blobfuse2-$abi
+  cd ..  
 done
 
-cd ..
+
