@@ -117,13 +117,12 @@ cd azure-storage-fuse
   # 设置 libfuse 的路径和链接选项
   export CGO_CFLAGS="-I${LIB_FUSE_DIR}/$abi/include"
   export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3"
-  
-  echo "CGO_CFLAGS: $CGO_CFLAGS"
 
   echo "Building azure-storage-fuse for $abi ($GOARCH)..."
   # 添加 osusergo 标签，使用纯 Go 实现替代 cgo 中对这些用户/组函数的调用
   # go build -tags "netgo,osusergo" -ldflags="-extldflags=-static" -o ../output/blobfuse2-$abi
    go build -tags "netgo,osusergo" -o ../output/blobfuse2-$abi
-  
-  cd ..  
+
+cd ..
+echo "==============Finished $abi =============="
 done
