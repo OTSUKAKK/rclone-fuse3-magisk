@@ -32,7 +32,6 @@ export SYSROOT=$TOOLCHAIN/sysroot
 echo "==============Start $abi (API $API) =============="
 echo "Building libfuse for $abi with API level $API..."
 
-cd libfuse
 
 # 设置架构相关变量
 export TARGET_HOST=${platforms[$abi]}
@@ -41,6 +40,8 @@ export CXX=$TARGET_HOST$API-clang++
 export AR=$TOOLCHAIN/bin/llvm-ar
 export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
 export STRIP=$TOOLCHAIN/bin/llvm-strip
+
+cd libfuse
 
 # 清理旧构建目录
 rm -rf build
