@@ -56,7 +56,17 @@ ar = '$AR'
 strip = '$STRIP'
 pkg-config = 'pkg-config'
 
+[properties]
+skip_sanity_check = true
+sys_root = '$SYSROOT'
+
 [host_machine]
+system = 'linux'
+cpu_family = '$(if [[ "$abi" == *"arm"* ]]; then echo "arm"; elif [[ "$abi" == *"x86"* ]]; then echo "x86"; fi)'
+cpu = '$(if [[ "$abi" == "arm64-v8a" ]]; then echo "aarch64"; elif [[ "$abi" == "armeabi-v7a" ]]; then echo "armv7a"; elif [[ "$abi" == "x86" ]]; then echo "i686"; else echo "x86_64"; fi)'
+endian = 'little'
+
+[target_machine]
 system = 'android'
 cpu_family = '$(if [[ "$abi" == *"arm"* ]]; then echo "arm"; elif [[ "$abi" == *"x86"* ]]; then echo "x86"; fi)'
 cpu = '$(if [[ "$abi" == "arm64-v8a" ]]; then echo "aarch64"; elif [[ "$abi" == "armeabi-v7a" ]]; then echo "armv7a"; elif [[ "$abi" == "x86" ]]; then echo "i686"; else echo "x86_64"; fi)'
@@ -67,7 +77,6 @@ EOF
 meson setup build\
   --cross-file=android_cross_file.txt \
   --prefix=${LIB_FUSE_DIR}/$abi \
-  -Dudevrulesdir=/dev/null \
   -Dutils=false \
   -Dexamples=false \
   -Dtests=false \
@@ -103,7 +112,7 @@ export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3 -static -Wl,-Bdynamic -ll
 
 echo "Building azure-storage-fuse for $abi ($GOARCH) with API level $API..."
 # 添加 osusergo 标签，使用纯 Go 实现替代 cgo 中对这些用户/组函数的调用
-go build -tags "netgo,osusergo" -o ../output/blobfuse2-$abi
+ go build -tags "netgo,osusergo" -ldflags="-extldflags=-static" -o ../output/blobfuse2-$abi
 
 cd ..
 echo "==============Finished $abi (API $API) =============="
