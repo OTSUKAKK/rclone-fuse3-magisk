@@ -23,7 +23,6 @@ export SYSROOT=$TOOLCHAIN/sysroot
 
 
 echo "patch libfuse 3.16"
-cd libfuse
 # patch libfuse 3.16 with termux-packages/root-packages/libfuse3
 # 确保 termux-packages 的补丁文件存在
 PATCH_DIR=$(pwd)/termux-packages/root-packages/libfuse3
@@ -34,11 +33,10 @@ fi
 # 应用补丁到 libfuse 3.16
 for patch in $PATCH_DIR/*.patch; do
   echo "Applying patch $patch..."
-  patch -p1 < "$patch"
+  patch -d libfuse -p1 < "$patch"
 done
 
 echo "patch azure-storage-fuse"
-cd ../
 #  chaneg C.__O_DIRECT to C.O_DIRECT in azure-storage-fuse/component/libfuse/libfuse_handler.go and libfuse_handler_test_wrapper.go
 sed -i 's/C.__O_DIRECT/C.O_DIRECT/g' azure-storage-fuse/component/libfuse/libfuse_handler.go
 sed -i 's/C.__O_DIRECT/C.O_DIRECT/g' azure-storage-fuse/component/libfuse/libfuse_handler_test_wrapper.go
@@ -51,6 +49,8 @@ pip install meson ninja
 for abi in "${!platforms[@]}"; do
   echo "Building libfuse for $abi..."
   
+  cd libfuse
+
   # 设置架构相关变量
   export TARGET_HOST=${platforms[$abi]}
   export CC=$TARGET_HOST$API-clang
