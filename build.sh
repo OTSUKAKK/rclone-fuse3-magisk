@@ -15,17 +15,35 @@ mkdir -p output
 mkdir -p libfuse-android-output
 LIB_FUSE_DIR=$(pwd)/libfuse-android-output
 
-# 克隆所需仓库
-git clone https://github.com/libfuse/libfuse.git --branch fuse-3.17.x --depth 1
-git clone https://github.com/Azure/azure-storage-fuse.git --depth 1
 
 # 设置通用的工具链路径
 export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64
 export PATH=$TOOLCHAIN/bin:$PATH
 export SYSROOT=$TOOLCHAIN/sysroot
 
-# 构建 libfuse
+
+echo "patch libfuse 3.16"
 cd libfuse
+# patch libfuse 3.16 with termux-packages/root-packages/libfuse3
+# 确保 termux-packages 的补丁文件存在
+PATCH_DIR=$(pwd)/termux-packages/root-packages/libfuse3
+if [ ! -d "$PATCH_DIR" ]; then
+  echo "Error: Patch directory $PATCH_DIR does not exist."
+  exit 1
+fi
+# 应用补丁到 libfuse 3.16
+for patch in $PATCH_DIR/*.patch; do
+  echo "Applying patch $patch..."
+  patch -p1 < "$patch"
+done
+
+echo "patch azure-storage-fuse"
+cd ../
+#  chaneg C.__O_DIRECT to C.O_DIRECT in azure-storage-fuse/component/libfuse/libfuse_handler.go and libfuse_handler_test_wrapper.go
+sed -i 's/C.__O_DIRECT/C.O_DIRECT/g' azure-storage-fuse/component/libfuse/libfuse_handler.go
+sed -i 's/C.__O_DIRECT/C.O_DIRECT/g' azure-storage-fuse/component/libfuse/libfuse_handler_test_wrapper.go
+
+# 构建 libfuse
 # libfuse 需要 meson 和 ninja 构建系统
 pip install meson ninja
 
@@ -52,7 +70,7 @@ c = '$CC'
 cpp = '$CXX'
 ar = '$AR'
 strip = '$STRIP'
-pkgconfig = 'pkg-config'
+pkg-config = 'pkg-config'
 
 [host_machine]
 system = 'android'
@@ -73,7 +91,6 @@ EOF
     -Dtests=false \
     -Ddisable-mtab=true \
     -Dbuildtype=release \
-    -Dmulti-threaded-loop=false \
     -Dudevrulesdir=${LIB_FUSE_DIR}/$abi/etc/udev/rules.d
 
   # 使用 ninja 编译和安装
@@ -87,7 +104,8 @@ cd azure-storage-fuse
 
   export NDK_TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
   export CGO_ENABLED=1
-
+  
+  export GOOS=android
   # 设置 Go 架构
   case "$abi" in
     "arm64-v8a") export GOARCH=arm64 ;;
@@ -98,13 +116,14 @@ cd azure-storage-fuse
   
   # 设置 libfuse 的路径和链接选项
   export CGO_CFLAGS="-I${LIB_FUSE_DIR}/$abi/include"
-  export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3 -static"
+  export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3"
   
+  echo "CGO_CFLAGS: $CGO_CFLAGS"
+
   echo "Building azure-storage-fuse for $abi ($GOARCH)..."
   # 添加 osusergo 标签，使用纯 Go 实现替代 cgo 中对这些用户/组函数的调用
   # go build -tags "netgo,osusergo" -ldflags="-extldflags=-static" -o ../output/blobfuse2-$abi
-  go build -o ../output/blobfuse2-$abi
+   go build -tags "netgo,osusergo" -o ../output/blobfuse2-$abi
+  
   cd ..  
 done
-
-
