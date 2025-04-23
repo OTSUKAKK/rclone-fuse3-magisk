@@ -23,6 +23,7 @@ for patch in $PATCH_DIR/*.patch; do
   echo "Applying patch $patch..."
   patch -d libfuse -p1 < "$patch"
 done
+sed -i "s/cc.find_library('rt')/cc.find_library('rt', required : false)/" lib/meson.build
 
 echo "patch azure-storage-fuse"
 #  chaneg C.__O_DIRECT to C.O_DIRECT in azure-storage-fuse/component/libfuse/libfuse_handler.go and libfuse_handler_test_wrapper.go
