@@ -10,18 +10,6 @@ declare -A platforms=(
 
 export API=31
 
-# 创建必要目录
-mkdir -p output
-mkdir -p libfuse-android-output
-LIB_FUSE_DIR=$(pwd)/libfuse-android-output
-
-
-# 设置通用的工具链路径
-export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64
-export PATH=$TOOLCHAIN/bin:$PATH
-export SYSROOT=$TOOLCHAIN/sysroot
-
-
 echo "patch libfuse 3.16"
 # patch libfuse 3.16 with termux-packages/root-packages/libfuse3
 # 确保 termux-packages 的补丁文件存在
@@ -40,6 +28,17 @@ echo "patch azure-storage-fuse"
 #  chaneg C.__O_DIRECT to C.O_DIRECT in azure-storage-fuse/component/libfuse/libfuse_handler.go and libfuse_handler_test_wrapper.go
 sed -i 's/C.__O_DIRECT/C.O_DIRECT/g' azure-storage-fuse/component/libfuse/libfuse_handler.go
 sed -i 's/C.__O_DIRECT/C.O_DIRECT/g' azure-storage-fuse/component/libfuse/libfuse_handler_test_wrapper.go
+
+# 创建必要目录
+mkdir -p output
+mkdir -p libfuse-android-output
+LIB_FUSE_DIR=$(pwd)/libfuse-android-output
+
+
+# 设置通用的工具链路径
+export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64
+export PATH=$TOOLCHAIN/bin:$PATH
+export SYSROOT=$TOOLCHAIN/sysroot
 
 # 构建 libfuse
 # libfuse 需要 meson 和 ninja 构建系统
@@ -79,8 +78,6 @@ cpu = '$(if [[ "$abi" == "arm64-v8a" ]]; then echo "aarch64"; elif [[ "$abi" == 
 endian = 'little'
 EOF
 
-  sed -i "s/cc.find_library('rt')/cc.find_library('rt', required : false)/" lib/meson.build
-
   # 然后使用 meson 配置构建
   meson setup build\
     --cross-file=android_cross_file.txt \
@@ -91,6 +88,7 @@ EOF
     -Dtests=false \
     -Ddisable-mtab=true \
     -Dbuildtype=release \
+    -Dcanfigger:default_library=static\
     -Dudevrulesdir=${LIB_FUSE_DIR}/$abi/etc/udev/rules.d
 
   # 使用 ninja 编译和安装
@@ -116,7 +114,7 @@ cd azure-storage-fuse
   
   # 设置 libfuse 的路径和链接选项
   export CGO_CFLAGS="-I${LIB_FUSE_DIR}/$abi/include"
-  export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3"
+  export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3 -static"
 
   echo "Building azure-storage-fuse for $abi ($GOARCH)..."
   # 添加 osusergo 标签，使用纯 Go 实现替代 cgo 中对这些用户/组函数的调用
