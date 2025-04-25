@@ -21,7 +21,7 @@ fi
 # 创建必要目录
 mkdir -p output
 mkdir -p libfuse-android-output
-LIB_FUSE_DIR=$(pwd)/libfuse-android-output
+LIB_FUSE_DIR=$(pwd)/output
 
 # 设置通用的工具链路径
 export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64
@@ -82,37 +82,35 @@ meson setup build\
   -Dtests=false \
   -Ddisable-mtab=true \
   -Dbuildtype=release \
-  -Ddefault_library=static \
-  -Dudevrulesdir=${LIB_FUSE_DIR}/$abi/etc/udev/rules.d
+  -Dudevrulesdir=${SYSROOT}/$abi/etc/udev/rules.d
 
 # 使用 ninja 编译和安装
 ninja -C build
-ninja -C build install
 
 cd ..
 
-# 交叉编译 azure-storage-fuse
-cd azure-storage-fuse
+# # 交叉编译 azure-storage-fuse
+# cd azure-storage-fuse
 
-export NDK_TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
-export CGO_ENABLED=1
+# export NDK_TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
+# export CGO_ENABLED=1
 
-export GOOS=android
-# 设置 Go 架构
-case "$abi" in
-  "arm64-v8a") export GOARCH=arm64 ;;
-  "armeabi-v7a") export GOARCH=arm ;;
-  "x86") export GOARCH=386 ;;
-  "x86_64") export GOARCH=amd64 ;;
-esac
+# export GOOS=android
+# # 设置 Go 架构
+# case "$abi" in
+#   "arm64-v8a") export GOARCH=arm64 ;;
+#   "armeabi-v7a") export GOARCH=arm ;;
+#   "x86") export GOARCH=386 ;;
+#   "x86_64") export GOARCH=amd64 ;;
+# esac
 
-# 设置 libfuse 的路径和链接选项
-export CGO_CFLAGS="-I${LIB_FUSE_DIR}/$abi/include"
-export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3 -static -Wl,-Bdynamic -llog"
+# # 设置 libfuse 的路径和链接选项
+# export CGO_CFLAGS="-I${LIB_FUSE_DIR}/$abi/include"
+# export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3 -static -Wl,-Bdynamic -llog"
 
-echo "Building azure-storage-fuse for $abi ($GOARCH) with API level $API..."
-# 添加 osusergo 标签，使用纯 Go 实现替代 cgo 中对这些用户/组函数的调用
- go build -tags "netgo,osusergo" -ldflags="-extldflags=-static" -o ../output/blobfuse2-$abi
+# echo "Building azure-storage-fuse for $abi ($GOARCH) with API level $API..."
+# # 添加 osusergo 标签，使用纯 Go 实现替代 cgo 中对这些用户/组函数的调用
+#  go build -tags "netgo,osusergo" -ldflags="-extldflags=-static" -o ../output/blobfuse2-$abi
 
 cd ..
 echo "==============Finished $abi (API $API) =============="
