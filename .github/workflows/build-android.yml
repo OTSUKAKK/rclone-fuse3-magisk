@@ -51,7 +51,7 @@ jobs:
         with:
           name: blobfuse2-android
           if-no-files-found: error
-          path: output/*
+          path: *.zip
 
       # Step 6: 如果有 tag，上传构建产物到现有 Release
       - name: Upload binaries to existing Release
@@ -60,5 +60,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag_name=$(echo "${GITHUB_REF}" | sed 's/refs\/tags\///')
-          gh release upload "$tag_name" output/* --clobber
+          gh release upload "$tag_name" *.zip --clobber
 
