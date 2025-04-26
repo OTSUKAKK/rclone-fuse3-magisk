@@ -1,0 +1,3 @@
+RCLONE_DIR="${MODPATH:-/data/adb/modules/rclone}"
+RCLONE_CONFIG="${RCLONE_DIR}/rclone.config"
+RCLONE_CACHE_DIR="${RCLONE_DIR}/cache"
