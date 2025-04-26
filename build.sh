@@ -9,11 +9,11 @@ RCLONE_VERSION=$(grep -oP '^version=\Kv.*' magisk-rclone/module.prop)
 
 cp magisk-rclone magisk-rclone_$ABI -r
 
-./scripts/download-rclone.sh $ABI $RCLONE_VERSION magisk-rclone_$ABI/vendor/bin/rclone
+./scripts/download-rclone.sh $ABI $RCLONE_VERSION magisk-rclone_$ABI/system/vendor/bin/rclone
 
 ./scripts/build-libfuse3.sh $ABI
-cp libfuse/build/util/fusermount3 magisk-rclone_$ABI/vendor/bin/
-chmod +x magisk-rclone_$ABI/vendor/bin/*
+cp libfuse/build/util/fusermount3 magisk-rclone_$ABI/system/vendor/bin/
+chmod +x magisk-rclone_$ABI/system/vendor/bin/*
 
 
 

@@ -4,3 +4,5 @@ RCLONE_WEB_PID="$TMPDIR/rclone_web.pid"
 
 RCLONE_CONFIG="${RCLONE_DIR}/rclone.config"
 RCLONE_CACHE_DIR="${TMPDIR:-/data/adb/modules/rclone/.cache}/rclone"
+
+source ./env.user
