@@ -1,0 +1,18 @@
+#!/system/bin/sh
+
+# 绑定地址，默认：5572
+LISTEN=$1
+
+CONFIG_PATH="${MODPATH:-/data/adb/modules/rclone}/rclone.config"
+CACHE_DIR="${MODPATH:-/data/adb/modules/rclone}/cache"
+
+
+rclone rcd \
+  --config="$CONFIG_PATH" \
+  --cache-dir="$CACHE_DIR" \
+  --rc-web-gui \
+  --rc-web-gui-no-open-browser \
+  --rc-web-gui-update \
+  --rc-addr=$LISTEN \
+  
+  

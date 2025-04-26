@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 ABI=$1
 RCLONE_VERSION=$2

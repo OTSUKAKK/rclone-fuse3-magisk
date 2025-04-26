@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # 定义支持的架构
 declare -A platforms=(
   ["arm64-v8a"]="aarch64-linux-android"
@@ -17,11 +17,6 @@ if [[ -z "${platforms[$abi]}" ]]; then
   echo "Error: Unsupported ABI '$abi'. Supported ABIs are: ${!platforms[@]}"
   exit 1
 fi
-
-# 创建必要目录
-mkdir -p output
-mkdir -p libfuse-android-output
-LIB_FUSE_DIR=$(pwd)/output
 
 # 设置通用的工具链路径
 export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64
@@ -76,7 +71,6 @@ EOF
 # 然后使用 meson 配置构建
 meson setup build\
   --cross-file=android_cross_file.txt \
-  --prefix=${LIB_FUSE_DIR}/$abi \
   -Dutils=true \
   -Dexamples=false \
   -Dtests=false \
