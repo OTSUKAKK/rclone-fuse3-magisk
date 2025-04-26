@@ -2,10 +2,6 @@
 
 MODPATH=${0%/*}
 
-echo "===================="
-echo "     rclone"
-echo "===================="
-
 
 set_permissions() {
   set_perm_recursive $MODPATH 0 0 0755 0644

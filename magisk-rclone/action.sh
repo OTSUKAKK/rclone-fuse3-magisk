@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 MODPATH=${0%/*}
-source "$MODPATH/env"
+set -a && source ${MODPATH}/env && set +a
 
 L() {
     echo "[rclone] $1"

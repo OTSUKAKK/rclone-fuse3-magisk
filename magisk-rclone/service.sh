@@ -2,7 +2,8 @@
 # This script runs at boot to ensure rclone mounts are established.
 
 MODPATH=${0%/*}
-source ${MODPATH}/env
+
+set -a && source ${MODPATH}/env && set +a
 
 # check and delete old PID file RCLONE_WEB_PID
 if [ -f "$RCLONE_WEB_PID" ]; then

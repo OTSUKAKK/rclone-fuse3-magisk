@@ -1,5 +1,5 @@
 #!/system/bin/sh
 
-source "${MODPATH:-/data/adb/modules/rclone}/env"
+set -a && source "${MODPATH:-/data/adb/modules/rclone}/env" && set +a
 
 rclone config $@
