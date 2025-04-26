@@ -21,5 +21,5 @@ chmod +x magisk-rclone_$ABI/vendor/bin/*
 
 
 ZIP_NAME="magisk-rclone_$ABI.zip"
-zip -r -j $ZIP_NAME magisk-rclone_$ABI
+zip -r $ZIP_NAME magisk-rclone_$ABI/*
 echo "打包完成: $ZIP_NAME"

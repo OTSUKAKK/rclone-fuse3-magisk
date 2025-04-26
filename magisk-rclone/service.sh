@@ -2,6 +2,7 @@
 # This script runs at boot to ensure rclone mounts are established.
 
 MODPATH=${0%/*}
+source ${MODPATH}/env
 
 log -t Magisk "[rclone] service script started:"
 
@@ -11,8 +12,5 @@ until [ "$(getprop sys.boot_completed)" -eq 1 ]; do
 done
 
 sleep 1
-
-# Call action.sh to manage rclone mounts
-. $MODPATH/action.sh
 
 log -t Magisk "[rclone] service script finished!"

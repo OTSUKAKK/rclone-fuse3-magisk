@@ -1,23 +1,15 @@
 #!/system/bin/sh
 
 MODPATH=${0%/*}
+source "$MODPATH/env"
 
 L() {
     echo "[rclone] $1"
     log -t Magisk "[rclone] $1"
 }
 
-CONFIG_PATH="/sdcard/.rclone/rclone.config"
-
-if [ -f "$CONFIG_PATH" ]; then
-    L "Load user configuration(用户配置文件): $CONFIG_PATH"
-else
-    CONFIG_PATH="${MODPATH}/rclone.config"
-    L "Load module configuration(模块配置文件): $CONFIG_PATH"
-fi
 
 MODULE_PROP="${MODPATH}/module.prop"
-
 
 run_unmount() {
     L "rclone 正在运行，正在卸载所有挂载..."
