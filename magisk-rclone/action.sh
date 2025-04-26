@@ -17,13 +17,13 @@ function check_stop_web_pid() {
       rm -f "$RCLONE_WEB_PID"
       echo "RClone Web GUI stopped successfully."
       echo "已成功关闭 RClone Web GUI"
-      return 0
+      return 1
     else
       echo "Found a stale PID file. Removing it..."
       rm -f "$RCLONE_WEB_PID"
     fi
   fi
-  return 1
+  return 0
 }
 
 function start_web() {
