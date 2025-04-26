@@ -3,7 +3,10 @@
 
 log -t Magisk "[rclone] service script started:"
 
-set -a && source "./env" && set +a
+[ "${MODPATH}"x = ""x ] && MODPATH="${0%/*}"
+log -t Magisk "[rclone] load env: $MODPATH/env"
+set -a && source "$MODPATH/env" && set +a
+
 sed -i 's/^description=\(.\{1,4\}| \)\?/description=/' "$MODULE_PROP"
 
 # check and delete old PID file RCLONE_WEB_PID
@@ -16,8 +19,6 @@ fi
 until [ "$(getprop sys.boot_completed)" -eq 1 ]; do
     sleep 2
 done
-
-sleep 1
 
 /vendor/bin/rclone listremotes | sed 's/:$//' | while read -r remote; do
   /vendor/bin/rclone-mount "$remote" --daemon

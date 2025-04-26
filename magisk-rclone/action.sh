@@ -4,9 +4,8 @@ MODPATH=${MODPATH:-/data/adb/modules/rclone}
 
 echo "Loading Environment Variables from:"
 echo "  * $MODPATH/env"
-echo "  * $MODPATH/env.user"
-
 set -a && source "$MODPATH/env" && set +a
+echo "  * $RCLONE_CONFIG_DIR/env"
 
 # Check if RCLONE_WEB_PID exists and stop the running process
 if [ -f "$RCLONE_WEB_PID" ]; then
@@ -31,7 +30,7 @@ fi
 
 echo "RClone web GUI will start ${URL}"
 echo "Open the following the URL in your browser to access the web GUI"
-echo "浏览器访问: ${URL}"
+echo "浏览器访问: ${URL} 进行配置"
 
 
 # Start the RClone web process and save the PID

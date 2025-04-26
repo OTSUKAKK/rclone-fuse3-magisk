@@ -16,10 +16,10 @@ shift
 
 # Run the rclone mount command with low priority, mounting remote storage to a local directory
 mkdir -p "/mnt/rclone-$NAME"
-nice -n 19 ionice -c 2 -n 7 rclone mount "$NAME": /"mnt/rclone-$NAME" $@
+nice -n 19 ionice -c 2 -n 7 rclone mount "$NAME": "/mnt/rclone-$NAME" "$@"
 
 # If the mount is successful, bind the mount point to other paths
-if $? == 0; then
+if [ $? -eq 0 ]; then
     mkdir -p "/data/media/0/$NAME"
     chown media_rw:media_rw "/data/media/0/$NAME"
     # Bind to the default runtime path
