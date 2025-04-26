@@ -43,10 +43,11 @@ function start_web() {
   # 启动 RClone Web 进程并保存 PID
   if [ -f "$RCLONE_CONFIG_DIR/htpasswd" ]; then
     echo "Found htpasswd file. Using it for authentication."
-    nohup /vendor/bin/rclone-web --rc-htpasswd="$RCLONE_CONFIG_DIR/htpasswd" > /dev/stdout 2>&1 &
+    nohup /vendor/bin/rclone-web --rc-htpasswd="$RCLONE_CONFIG_DIR/htpasswd" > "$RCLONE_CACHE_DIR/rclone-web.log" 2>&1 &
   else
     echo "No htpasswd file found at $RCLONE_CONFIG_DIR. Starting without authentication."
     nohup /vendor/bin/rclone-web > /dev/stdout 2>&1 &
+    nohup /vendor/bin/rclone-web > "$RCLONE_CACHE_DIR/rclone-web.log" 2>&1 &
   fi
   PID=$!
   echo "$PID" > "$RCLONE_WEB_PID"
