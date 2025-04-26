@@ -7,15 +7,12 @@ set -a && source ${MODPATH}/env && set +a
 
 log -t Magisk "[rclone] service script started:"
 
+sed -i 's/^description=\(.\{1,4\}| \)\?/description=/' "$MODULE_PROP"
+
 run_mount() {
     rclone listremotes | sed 's/:$//' | while read -r remote; do
-        MOUNT_POINT="/sdcard/$remote"
-        if [ ! -d "$MOUNT_POINT" ]; then
-            mkdir -p "$MOUNT_POINT"
-        fi
-        
-        rclone mount ""$remote:" "$MOUNT_POINT" --daemon  
-        log -t Magisk "[rclone]mount: $remote => $MOUNT_POINT"
+        rclone-mount "$remote" --daemon
+        log -t Magisk "[rclone]mount: $remote => /sdcard/$remote"
     done
 }
 
