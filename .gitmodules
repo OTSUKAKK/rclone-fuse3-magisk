@@ -1,7 +1,4 @@
 [submodule "libfuse"]
 	path = libfuse
 	url = https://github.com/libfuse/libfuse.git
-  branch = fuse-3.17.x
-[submodule "azure-storage-fuse"]
-	path = azure-storage-fuse
-	url = https://github.com/Azure/azure-storage-fuse.git
+    branch = fuse-3.17.x

@@ -1,0 +1,18 @@
+#!/system/bin/sh
+
+LISTEN=${1:-":5572"} 
+shift
+
+CONFIG_PATH="${MODPATH:-/data/adb/modules/rclone}/rclone.config"
+CACHE_DIR="${MODPATH:-/data/adb/modules/rclone}/cache"
+
+echo rcd \
+  --config="$CONFIG_PATH" \
+  --cache-dir="$CACHE_DIR" \
+  --rc-web-gui \
+  --rc-web-gui-no-open-browser \
+  --rc-web-gui-update \
+  --rc-addr=$LISTEN \
+  "$@"
+
+
