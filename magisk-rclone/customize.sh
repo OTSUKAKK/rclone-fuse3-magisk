@@ -13,9 +13,9 @@ set_permissions
 MODULE_PROP="${MODPATH}/module.prop"
 MODULE_CONFIG="/data/adb/modules/rclone/conf"
 
-if [ -f "$MODULE_CONFIG" ] || [ -f "$MODULE_ENV" ] ; then
-  ui_print "✅ 已检测到配置文件 ${MODULE_CONFIG}，已复制到模块目录"
-  cp "$MODULE_CONFIG" "$MODPATH/" 
+if [ -d "$MODULE_CONFIG" ] ; then
+  ui_print "✅ 已检测到配置目录 ${MODULE_CONFIG}，已复制到模块目录"
+  cp -r "$MODULE_CONFIG" "$MODPATH/"
   sed -i 's/^description=\(.\{1,4\}| \)\?/description=✅| /' "$MODULE_PROP"
 else
   ui_print "⚙️ 未检测到配置文件，通过命令行或者web进行配置"
