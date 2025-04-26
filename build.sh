@@ -13,12 +13,17 @@ cp magisk-rclone magisk-rclone_$ABI -r
 
 ./scripts/build-libfuse3.sh $ABI
 cp libfuse/build/util/fusermount3 magisk-rclone_$ABI/vendor/bin/
-
 chmod +x magisk-rclone_$ABI/vendor/bin/*
 
-ZIP_NAME="magisk-rclone_$ABI.zip"
+
 
 cd magisk-rclone_$ABI
+mkdir -p META-INF/com/google/android
+echo "#MAGISK" > META-INF/com/google/android/updater-script
+wget https://raw.githubusercontent.com/topjohnwu/Magisk/refs/heads/master/scripts/module_installer.sh -O META-INF/com/google/android/update-binary
+chmod +x META-INF/com/google/android/update-binary
+
+ZIP_NAME="magisk-rclone_$ABI.zip"
 zip -r9 ../$ZIP_NAME .
 cd ..
 

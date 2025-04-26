@@ -38,18 +38,18 @@ jobs:
           ndk-version: r27c
 
       # Step 4.1: 配置交叉编译环境变量并构建 Android 各平台二进制文件
-      - name: Build blobfuse2 for Android arm64-v8a
+      - name: Build arm64-v8a
         run: ./build.sh arm64-v8a
 
       # Step 4.2: 构建 Android x86_64 二进制文件
-      - name: Build blobfuse2 for Android x86_64
+      - name: Build x86_64
         run: ./build.sh x86_64
 
       # Step 5: 上传构建产物
       - name: Upload Android binaries
         uses: actions/upload-artifact@v4
         with:
-          name: blobfuse2-android
+          name: magisk-rclone
           if-no-files-found: error
           path: "*.zip"
 
