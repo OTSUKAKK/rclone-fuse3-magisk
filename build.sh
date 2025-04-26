@@ -5,7 +5,10 @@ set -e
 # 获取传入的参数
 ABI=$1
 
-RCLONE_VERSION="v1.69.1"
+
+
+# 从 magisk-rclone/module.prop 文件中读取 RCLONE_VERSION
+RCLONE_VERSION=$(grep -oP '^version=\Kv.*' magisk-rclone/module.prop)
 
 
 ./scripts/build-libfuse3.sh $ABI
