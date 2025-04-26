@@ -10,7 +10,7 @@ declare -A platforms=(
 
 # 获取传入的参数
 abi=$1
-API=${2:-31} # 如果未传入第二个参数，则默认使用 31
+API=${2:-28} # 如果未传入第二个参数，则默认使用 28 (Andorid 9)
 
 # 检查传入的 $abi 是否有效
 if [[ -z "${platforms[$abi]}" ]]; then
@@ -77,40 +77,15 @@ EOF
 meson setup build\
   --cross-file=android_cross_file.txt \
   --prefix=${LIB_FUSE_DIR}/$abi \
-  -Dutils=false \
+  -Dutils=true \
   -Dexamples=false \
   -Dtests=false \
   -Ddisable-mtab=true \
   -Dbuildtype=release \
-  -Dudevrulesdir=${SYSROOT}/$abi/etc/udev/rules.d
+  --default-library=static
 
 # 使用 ninja 编译和安装
 ninja -C build
-
-cd ..
-
-# # 交叉编译 azure-storage-fuse
-# cd azure-storage-fuse
-
-# export NDK_TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
-# export CGO_ENABLED=1
-
-# export GOOS=android
-# # 设置 Go 架构
-# case "$abi" in
-#   "arm64-v8a") export GOARCH=arm64 ;;
-#   "armeabi-v7a") export GOARCH=arm ;;
-#   "x86") export GOARCH=386 ;;
-#   "x86_64") export GOARCH=amd64 ;;
-# esac
-
-# # 设置 libfuse 的路径和链接选项
-# export CGO_CFLAGS="-I${LIB_FUSE_DIR}/$abi/include"
-# export CGO_LDFLAGS="-L${LIB_FUSE_DIR}/$abi/lib -lfuse3 -static -Wl,-Bdynamic -llog"
-
-# echo "Building azure-storage-fuse for $abi ($GOARCH) with API level $API..."
-# # 添加 osusergo 标签，使用纯 Go 实现替代 cgo 中对这些用户/组函数的调用
-#  go build -tags "netgo,osusergo" -ldflags="-extldflags=-static" -o ../output/blobfuse2-$abi
 
 cd ..
 echo "==============Finished $abi (API $API) =============="
