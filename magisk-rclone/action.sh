@@ -1,7 +1,12 @@
 #!/system/bin/sh
 
 MODPATH=${0%/*}
-set -a && source ${MODPATH}/env && set +a
+
+echo "Loading Environment Variables from:"
+echo "  * $MODPATH/env"
+echo "  * $MODPATH/env.user"
+
+set -a && source "$MODPATH/env" && set +a
 
 # L() {
 #     echo "[rclone] $1"
@@ -31,4 +36,6 @@ set -a && source ${MODPATH}/env && set +a
 #     L "Web GUI 端口 8000 正在运行，PID: $(cat "$RCLONE_WEB_PID")"
 # fi
 
-rclone-web
+echo "rclone web GUI started ${RCLONE_RC_ADDR}"
+
+/vendor/bin/rclone-web

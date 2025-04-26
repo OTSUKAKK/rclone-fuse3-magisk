@@ -19,4 +19,4 @@ RCLONE_RC_ADDR=":5572"
 RCLONE_RC_NO_AUTH=true
 RCLONE_GID=1015
 
-source ${RCLONE_DIR}/env.user || true
+[ -f ${RCLONE_DIR}/env.user ] && source ${RCLONE_DIR}/env.user

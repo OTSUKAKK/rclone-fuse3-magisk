@@ -15,8 +15,6 @@ cp magisk-rclone magisk-rclone_$ABI -r
 cp libfuse/build/util/fusermount3 magisk-rclone_$ABI/system/vendor/bin/
 chmod +x magisk-rclone_$ABI/system/vendor/bin/*
 
-
-
 cd magisk-rclone_$ABI
 mkdir -p META-INF/com/google/android
 echo "#MAGISK" > META-INF/com/google/android/updater-script
