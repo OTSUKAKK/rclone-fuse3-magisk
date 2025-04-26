@@ -4,6 +4,12 @@
 MODPATH=${0%/*}
 source ${MODPATH}/env
 
+# check and delete old PID file RCLONE_WEB_PID
+if [ -f "$RCLONE_WEB_PID" ]; then
+    log -t Magisk "[rclone] old PID file found, deleting..."
+    rm -f "$RCLONE_WEB_PID"
+fi
+
 log -t Magisk "[rclone] service script started:"
 
 # Wait for the system to boot completely
