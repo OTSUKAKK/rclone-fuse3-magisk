@@ -8,34 +8,42 @@ echo "  * $MODPATH/env.user"
 
 set -a && source "$MODPATH/env" && set +a
 
-# L() {
-#     echo "[rclone] $1"
-# }
+# Check if RCLONE_WEB_PID exists and stop the running process
+if [ -f "$RCLONE_WEB_PID" ]; then
+    PID=$(cat "$RCLONE_WEB_PID")
+    if ps -p "$PID" > /dev/null 2>&1; then
+        echo "RClone web process is already running with PID: $PID. Stopping it..."
+        kill "$PID"
+        rm -f "$RCLONE_WEB_PID"
+        echo "RClone web process stopped."
+        exit 0
+    else
+        echo "Stale PID file found. Removing it."
+        rm -f "$RCLONE_WEB_PID"
+    fi
+fi
 
-# 检查 rclone web 是否运行
-# check_rclone_web() {
-#     if [ -f "$RCLONE_WEB_PID" ]; then
-#         PID=$(cat "$RCLONE_WEB_PID")
-#         if [ -d "/proc/$PID" ]; then
-#             L "rclone web 正在运行，PID: $PID"
-#             kill $PID && rm -f "$RCLONE_WEB_PID"
-#             return 0  # 进程存在
-#         else
-#             rm -f "$RCLONE_WEB_PID"  # 清理无效的 PID 文件
-#         fi
-#     fi
-#     return 1  # 进程不存在
-# }
+if [[ "${RCLONE_RC_ADDR}" == :* ]]; then
+    URL="http://localhost${RCLONE_RC_ADDR}"
+else
+    URL=${RCLONE_RC_ADDR}
+fi
 
-# if check_rclone_web; then
-#     L "web GUI 已关闭"
-# else
-#     L "Web 未运行，正在启动..."
-#     rclone-web --rc-addr=":8000" --rc-no-auth &
-#     echo $! > "$RCLONE_WEB_PID"  # 记录 PID
-#     L "Web GUI 端口 8000 正在运行，PID: $(cat "$RCLONE_WEB_PID")"
-# fi
+echo "RClone web GUI will start ${URL}"
+echo "Open the following the URL in your browser to access the web GUI"
+echo "浏览器访问: ${URL}"
 
-echo "rclone web GUI started ${RCLONE_RC_ADDR}"
 
-/vendor/bin/rclone-web
+# Start the RClone web process and save the PID
+# Check if htpasswd file exists
+if [ -f "$RCLONE_CONFIG_DIR/htpasswd" ]; then
+    echo "htpasswd file found, using it for authentication"
+    /vendor/bin/rclone-web --rc-htpasswd="$RCLONE_CONFIG_DIR/htpasswd" &
+    echo $! > "$RCLONE_WEB_PID"
+    echo "RClone web process started with PID: $!"
+else
+    echo "$RCLONE_CONFIG_DIR/htpasswd file not found, using no auth"
+    /vendor/bin/rclone-web &
+    echo $! > "$RCLONE_WEB_PID"
+    echo "RClone web process started with PID: $!"
+fi

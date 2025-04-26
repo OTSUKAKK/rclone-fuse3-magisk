@@ -1,7 +1,6 @@
 #!/system/bin/sh
 # This script runs at boot to ensure rclone mounts are established.
 
-
 log -t Magisk "[rclone] service script started:"
 
 set -a && source "./env" && set +a

@@ -9,6 +9,13 @@ This Magisk module integrates Rclone with FUSE support into Android, allowing yo
 - **Web GUI Management**: Start and manage the Rclone Web GUI.
 - **Customizable Configuration**: Easily configure Rclone options via environment variables.
 
+* 点击action 启动web server 网页配置
+* 开机自动挂载所有配置
+* 配置文件夹
+    * /data/adb/modules/rclone/conf/rclone.conf 配置文件 (可使用rclone-config 配置)
+    * /data/adb/modules/rclone/conf/env 自定义参数和Flag
+    * /data/adb/modules/rclone/conf/htpasswd web账号密码
+
 ## Scripts
 
 ### `action` button
