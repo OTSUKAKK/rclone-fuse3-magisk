@@ -30,7 +30,7 @@ FILENAME="rclone-android-21-${ARCH_URL_PART}.gz"
 RCLONE_URL="https://beta.rclone.org/${RCLONE_VERSION}/testbuilds/${FILENAME}"
 
 echo "- 下载 rclone: $RCLONE_URL"
-TMP_GZ="/data/local/tmp/rclone.gz"
+TMP_GZ="/tmp/rclone.gz"
 curl -L "$RCLONE_URL" -o "$TMP_GZ" || abort "! 下载失败"
 
 gunzip -c "$TMP_GZ" > $SAVE_PATH
