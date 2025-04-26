@@ -1,5 +1,12 @@
 #!/system/bin/sh
 
+MODPATH=${0%/*}
+
+echo "===================="
+echo "     rclone"
+echo "===================="
+
+
 set_permissions() {
   set_perm_recursive $MODPATH 0 0 0755 0644
   set_perm_recursive $MODPATH/system/bin/ 0 0 0755
@@ -7,9 +14,9 @@ set_permissions() {
 
 set_permissions
 
-
+MODULE_PROP="${MODPATH}/module.prop"
 CURRENT_MODULE_CONFIG="${MODPATH}/rclone.config"
-MODULE_CONFIG="/data/adb/modules/magisk-rclone//rclone.config"
+MODULE_CONFIG="/data/adb/modules/magisk-rclone/rclone.config"
 
 if [ -f "$CURRENT_MODULE_CONFIG" ] || [ -f "$MODULE_CONFIG" ]; then
     ui_print "✅ 已检测到配置文件"

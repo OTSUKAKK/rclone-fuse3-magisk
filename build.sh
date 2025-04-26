@@ -19,7 +19,7 @@ chmod +x magisk-rclone_$ABI/vendor/bin/*
 ZIP_NAME="magisk-rclone_$ABI.zip"
 
 cd magisk-rclone_$ABI
-zip -r ../$ZIP_NAME ./*
+zip -r9 ../$ZIP_NAME .
 cd ..
 
 echo "打包完成: $ZIP_NAME"
