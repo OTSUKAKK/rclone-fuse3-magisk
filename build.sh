@@ -12,10 +12,11 @@ RCLONE_VERSION="v1.69.1"
 cp magisk-rclone magisk-rclone_$ABI -r
 cp libfuse/build/util/fusermount3 magisk-rclone_$ABI/vendor/bin/
 
-./scripts/ownload-rclone.sh $ABI $RCLONE_VERSION magisk-rclone_$ABI/vendor/bin/rclone
+./scripts/download-rclone.sh $ABI $RCLONE_VERSION magisk-rclone_$ABI/vendor/bin/rclone
 
-set_permissions() {
-  chmod +x magisk-rclone_$ABI/vendor/bin/*
-}
+chmod +x magisk-rclone_$ABI/vendor/bin/*
 
-set_permissions
+
+ZIP_NAME="magisk-rclone_$ABI.zip"
+zip -r -j $ZIP_NAME magisk-rclone_$ABI
+echo "打包完成: $ZIP_NAME"
