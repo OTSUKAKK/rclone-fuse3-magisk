@@ -7,42 +7,53 @@ echo "  * $MODPATH/env"
 set -a && source "$MODPATH/env" && set +a
 echo "  * $RCLONE_CONFIG_DIR/env"
 
-# Check if RCLONE_WEB_PID exists and stop the running process
-if [ -f "$RCLONE_WEB_PID" ]; then
+# 检查并停止正在运行的 RClone Web 进程
+function check_stop_web_pid() {
+  if [ -f "$RCLONE_WEB_PID" ]; then
     PID=$(cat "$RCLONE_WEB_PID")
     if ps -p "$PID" > /dev/null 2>&1; then
-        echo "RClone web process is already running with PID: $PID. Stopping it..."
-        kill "$PID"
-        rm -f "$RCLONE_WEB_PID"
-        echo "RClone web process stopped."
-        exit 0
+      echo "RClone Web GUI is already running with PID($PID). Stopping it..."
+      kill $PID
+      rm -f "$RCLONE_WEB_PID"
+      echo "RClone Web GUI stopped successfully."
+      echo "已成功关闭 RClone Web GUI"
+      return 0
     else
-        echo "Stale PID file found. Removing it."
-        rm -f "$RCLONE_WEB_PID"
+      echo "Found a stale PID file. Removing it..."
+      rm -f "$RCLONE_WEB_PID"
     fi
-fi
+  fi
+  return 1
+}
 
-if [[ "${RCLONE_RC_ADDR}" == :* ]]; then
-    URL="http://localhost${RCLONE_RC_ADDR}"
-else
+function start_web() {
+  # 构建 RClone Web GUI 的访问 URL
+  if [[ "${RCLONE_RC_ADDR}" == :* ]]; then
+    LOCAL_IP=$(ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p')
+    URL="http://${LOCAL_IP:-localhost}${RCLONE_RC_ADDR}"
+  else
     URL=${RCLONE_RC_ADDR}
-fi
+  fi
 
-echo "RClone web GUI will start ${URL}"
-echo "Open the following the URL in your browser to access the web GUI"
-echo "浏览器访问: ${URL} 进行配置"
+  set -e
+  echo "RClone Web GUI will start at: ${URL}"
+  echo "Open the following URL in your browser to access the web GUI:"
+  echo "浏览器访问: ${URL} 进行配置"
 
+  # 启动 RClone Web 进程并保存 PID
+  if [ -f "$RCLONE_CONFIG_DIR/htpasswd" ]; then
+    echo "Found htpasswd file. Using it for authentication."
+    nohup /vendor/bin/rclone-web --rc-htpasswd="$RCLONE_CONFIG_DIR/htpasswd" > /dev/stdout 2>&1 &
+  else
+    echo "No htpasswd file found at $RCLONE_CONFIG_DIR. Starting without authentication."
+    nohup /vendor/bin/rclone-web > /dev/stdout 2>&1 &
+  fi
+  PID=$!
+  echo "$PID" > "$RCLONE_WEB_PID"
+  echo "RClone Web GUI started with PID($PID)."
+  echo "网页已启动 $URL"
+}
 
-# Start the RClone web process and save the PID
-# Check if htpasswd file exists
-if [ -f "$RCLONE_CONFIG_DIR/htpasswd" ]; then
-    echo "htpasswd file found, using it for authentication"
-    /vendor/bin/rclone-web --rc-htpasswd="$RCLONE_CONFIG_DIR/htpasswd" &
-    echo $! > "$RCLONE_WEB_PID"
-    echo "RClone web process started with PID($!)"
-else
-    echo "$RCLONE_CONFIG_DIR/htpasswd file not found, using no auth"
-    /vendor/bin/rclone-web &
-    echo $! > "$RCLONE_WEB_PID"
-    echo "RClone web process started with PID($!)"
+if check_stop_web_pid; then
+  start_web
 fi

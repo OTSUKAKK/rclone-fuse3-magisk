@@ -19,6 +19,6 @@ RCLONE_RC_ADDR=":5572"
 RCLONE_RC_NO_AUTH=true
 RCLONE_GID=1015
 
-[ -f "$RCLONE_CONFIG_DIR}/env" ] && source "$RCLONE_CONFIG_DIR}/env.user"
+[ -f "${RCLONE_CONFIG_DIR}/env" ] && source "${RCLONE_CONFIG_DIR}/env.user"
 
 # for more info https://rclone.org/docs/#environment-variables
