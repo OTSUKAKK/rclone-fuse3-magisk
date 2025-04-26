@@ -1,6 +1,6 @@
 #!/system/bin/sh
 
-MODPATH=${0%/*}
+MODPATH=${MODPATH:-/data/adb/modules/rclone}
 
 echo "Loading Environment Variables from:"
 echo "  * $MODPATH/env"

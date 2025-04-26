@@ -1,11 +1,10 @@
 #!/system/bin/sh
 # This script runs at boot to ensure rclone mounts are established.
 
-MODPATH=${0%/*}
 
 log -t Magisk "[rclone] service script started:"
 
-set -a && source "$MODPATH/env" && set +a
+set -a && source "./env" && set +a
 sed -i 's/^description=\(.\{1,4\}| \)\?/description=/' "$MODULE_PROP"
 
 # check and delete old PID file RCLONE_WEB_PID

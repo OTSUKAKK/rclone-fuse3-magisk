@@ -1,6 +1,6 @@
 #!/system/bin/sh
 
-MODPATH=${0%/*}
+MODPATH=${MODPATH:-0%/*}
 
 set_permissions() {
   set_perm_recursive $MODPATH 0 0 0755 0644
