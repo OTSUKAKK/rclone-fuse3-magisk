@@ -16,7 +16,7 @@ x86)
     ARCH_URL_PART="x86"
     ;;
 x86_64)
-    ARCH_URL_PART="x86_64"
+    ARCH_URL_PART="x64"
     ;;
 *)
     echo "! 不支持的架构: $ABI"
