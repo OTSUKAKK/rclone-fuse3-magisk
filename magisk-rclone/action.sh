@@ -39,10 +39,10 @@ if [ -f "$RCLONE_CONFIG_DIR/htpasswd" ]; then
     echo "htpasswd file found, using it for authentication"
     /vendor/bin/rclone-web --rc-htpasswd="$RCLONE_CONFIG_DIR/htpasswd" &
     echo $! > "$RCLONE_WEB_PID"
-    echo "RClone web process started with PID: $!"
+    echo "RClone web process started with PID($!)"
 else
     echo "$RCLONE_CONFIG_DIR/htpasswd file not found, using no auth"
     /vendor/bin/rclone-web &
     echo $! > "$RCLONE_WEB_PID"
-    echo "RClone web process started with PID: $!"
+    echo "RClone web process started with PID($!)"
 fi
