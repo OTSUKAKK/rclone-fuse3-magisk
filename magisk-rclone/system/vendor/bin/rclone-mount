@@ -18,11 +18,15 @@ else
 
   # If the mount is successful, bind the mount point to other paths
   if [ $? -eq 0 ]; then
-    mkdir -p "/data/media/0/$NAME"
-    chown media_rw:media_rw "/data/media/0/$NAME"
-    # Bind to the default runtime path
-    mount --bind "$MNT_DIR" "/mnt/runtime/default/emulated/0/$NAME"
+    MEDIA_ENDPOINT="/data/media/0/$NAME"
+    mkdir -p "$MEDIA_ENDPOINT"
+    chown media_rw:media_rw "$MEDIA_ENDPOINT"
+ 
     # Bind to the pass_through path
     mount --bind "$MNT_DIR" "/mnt/pass_through/0/emulated/0/$NAME"
+
+    # Bind to the default runtime path
+    DEFAULT_BINDPOINT="/mnt/runtime/default/emulated/0/$NAME" 
+    mount | grep -q "$DEFAULT_BINDPOINT" || mount --bind "$MNT_DIR" "$DEFAULT_BINDPOINT"
   fi
 fi
