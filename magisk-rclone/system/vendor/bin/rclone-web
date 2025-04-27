@@ -1,11 +1,9 @@
 #!/system/bin/sh
-
-set -a && source "${MODPATH:-/data/adb/modules/rclone}/env" && set +a
+#load environment file
+set -a && . "${MODPATH:-/data/adb/modules/rclone}/env" && set +a
 
 rclone rcd \
   --rc-web-gui \
   --rc-web-gui-no-open-browser \
   --rc-web-gui-update \
-  $@
-
-
+  "$@"

@@ -1,13 +1,12 @@
 #!/system/bin/sh
+#load environment file
+set -a && . "${MODPATH:-/data/adb/modules/rclone}/env" && set +a
 
-set -a && source "${MODPATH:-/data/adb/modules/rclone}/env" && set +a
-
-# Unmount all Rclone mount points
-echo "unmounting all rclone mount points..."
-mount | grep "type fuse.rclone" | awk '{print $3}' | while read -r mount_point; do
-    umount -l "$mount_point" && echo "umount: $mount_point" || echo "failed: $mount_point"
+echo "Unmounting rclone mounts..."
+mount | grep "type fuse.rclone" | awk '{for (i=1; i<=NF; i++) if ($i=="type") print $(i-1)}' | while read -r mp; do
+    umount -l "$mp" && echo "- umounted: $mp" || echo "- failed: $mp"
 done
 
 # Kill all Rclone-related processes
-echo "kill all rclone processes..."
-pkill -f "rclone" && echo "all rclone stopped" || echo "no processes found"
+echo "Killing rclone processes..."
+pgrep -f "rclone" >/dev/null && { pkill -f "rclone"; echo "rclone processes killed."; } || echo "no rclone processes found."

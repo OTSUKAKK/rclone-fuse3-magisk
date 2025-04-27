@@ -2,10 +2,10 @@
 
 MODPATH=${MODPATH:-/data/adb/modules/rclone}
 
-echo "Loading Environment Variables from:"
-echo "  * $MODPATH/env"
-set -a && source "$MODPATH/env" && set +a
-echo "  * $RCLONE_CONFIG_DIR/env"
+echo "Loading Environment Variables"
+echo "  * 默认(Predefined): $MODPATH/env"
+set -a && . "$MODPATH/env" && set +a
+echo "  * 自定义(Customized): $RCLONE_CONFIG_DIR/env"
 
 # 检查并停止正在运行的 RClone Web 进程
 function check_stop_web_pid() {

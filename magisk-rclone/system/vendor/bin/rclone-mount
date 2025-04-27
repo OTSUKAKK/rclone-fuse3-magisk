@@ -1,30 +1,28 @@
 #!/system/bin/sh
-
-# Set environment variables and load the configuration file
-set -a && source "${MODPATH:-/data/adb/modules/rclone}/env" && set +a
+#load environment file
+set -a && . "${MODPATH:-/data/adb/modules/rclone}/env" && set +a
 
 # Get the first argument as the name
 NAME=$1
 
 if [ -z "$NAME" ]; then
-    echo "Usage: $0 <name>"
-    echo "mounts the rclone remote storage to sdcard/<name>"
-    exit 1
-fi
+  echo "Usage: $0 <name>"
+  echo "mounts the rclone remote storage to sdcard/<name>"
+else
+  shift
 
-shift
+  # Run the rclone mount command with low priority, mounting remote storage to a local directory
+  MNT_DIR="/mnt/rclone-$NAME"
+  mkdir -p "$MNT_DIR"
+  nice -n 5 ionice -c 2 -n 7 rclone mount "$NAME:" "$MNT_DIR" "$@"
 
-# Run the rclone mount command with low priority, mounting remote storage to a local directory
-MNT_DIR="/mnt/rclone-$NAME"
-mkdir -p "$MNT_DIR"
-nice -n 19 ionice -c 2 -n 7 rclone mount "$NAME:" "$MNT_DIR" "$@"
-
-# If the mount is successful, bind the mount point to other paths
-if [ $? -eq 0 ]; then
+  # If the mount is successful, bind the mount point to other paths
+  if [ $? -eq 0 ]; then
     mkdir -p "/data/media/0/$NAME"
     chown media_rw:media_rw "/data/media/0/$NAME"
     # Bind to the default runtime path
     mount --bind "$MNT_DIR" "/mnt/runtime/default/emulated/0/$NAME"
     # Bind to the pass_through path
     mount --bind "$MNT_DIR" "/mnt/pass_through/0/emulated/0/$NAME"
+  fi
 fi
