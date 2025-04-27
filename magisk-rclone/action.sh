@@ -9,18 +9,18 @@ echo "  * 自定义(Customized): $RCLONE_CONFIG_DIR/env"
 
 # 检查并停止正在运行的 RClone Web 进程
 function check_stop_web_pid() {
-  if [ -f "$RCLONE_WEB_PID" ]; then
-    PID=$(cat "$RCLONE_WEB_PID")
+  if [ -f "$RCLONEWEB_PID" ]; then
+    PID=$(cat "$RCLONEWEB_PID")
     if ps -p "$PID" > /dev/null 2>&1; then
       echo "RClone Web GUI is already running with PID($PID). Stopping it..."
       kill $PID
-      rm -f "$RCLONE_WEB_PID"
+      rm -f "$RCLONEWEB_PID"
       echo "RClone Web GUI stopped successfully."
       echo "已成功关闭 RClone Web GUI"
       return 1
     else
       echo "Found a stale PID file. Removing it..."
-      rm -f "$RCLONE_WEB_PID"
+      rm -f "$RCLONEWEB_PID"
     fi
   fi
   return 0
@@ -50,7 +50,7 @@ function start_web() {
     nohup /vendor/bin/rclone-web > "$RCLONE_CACHE_DIR/rclone-web.log" 2>&1 &
   fi
   PID=$!
-  echo "$PID" > "$RCLONE_WEB_PID"
+  echo "$PID" > "$RCLONEWEB_PID"
   echo "RClone Web GUI started with PID($PID)."
   echo "网页已启动 $URL"
 }

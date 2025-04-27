@@ -1,6 +1,6 @@
 #!/system/bin/sh
 #load environment file
-set -a && . "${MODPATH:-/data/adb/modules/rclone}/env" && set +a
+set -a && . "${RCLONEDIR:-/data/adb/modules/rclone}/env" && set +a
 
 echo "Unmounting rclone mounts..."
 mount | grep "type fuse.rclone" | awk '{for (i=1; i<=NF; i++) if ($i=="type") print $(i-1)}' | while read -r mp; do

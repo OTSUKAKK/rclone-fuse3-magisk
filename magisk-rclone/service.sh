@@ -7,7 +7,7 @@ log -t Magisk "[rclone] service script started:"
 log -t Magisk "[rclone] load env: $MODPATH/env"
 set -a && . "$MODPATH/env" && set +a
 
-sed -i 's/^description=\(.\{1,4\}| \)\?/description=/' "$MODULE_PROP"
+sed -i 's/^description=\(.\{1,4\}| \)\?/description=/' "$RCLONEPROP"
 
 # Wait for the system to boot completely
 COUNT=0
@@ -21,5 +21,5 @@ log -t Magisk "[rclone] system is ready after ${COUNT}. Starting the mounting pr
   /vendor/bin/rclone-mount "$remote" --daemon
 done
 
-sed -i 's/^description=\(.\{1,4\}| \)\?/description=🚀| /' "$MODULE_PROP"
+sed -i 's/^description=\(.\{1,4\}| \)\?/description=🚀| /' "$RCLONEPROP"
 log -t Magisk "[rclone] service script finished!"
