@@ -14,7 +14,7 @@ else
   # Run the rclone mount command with low priority, mounting remote storage to a local directory
   MNT_DIR="/mnt/rclone-$NAME"
   mkdir -p "$MNT_DIR"
-  nice -n 5 ionice -c 2 -n 7 rclone mount "$NAME:" "$MNT_DIR" "$@"
+  nice -n 5 rclone mount "$NAME:" "$MNT_DIR" "$@"
 
   # If the mount is successful, bind the mount point to other paths
   if [ $? -eq 0 ]; then
