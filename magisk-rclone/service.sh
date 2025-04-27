@@ -20,11 +20,11 @@ COUNT=0
 until { [ "$(getprop sys.boot_completed)" = "1" ] && [ "$(getprop init.svc.bootanim)" = "stopped" ]; } || [ $((COUNT++)) -ge 20 ]; do 
   sleep 10;
 done
-log -t Magisk "[rclone] READY after ${COUNT}"
+log -t Magisk "[rclone] system is ready after ${COUNT}. Starting the mounting process."
 
 /vendor/bin/rclone listremotes | sed 's/:$//' | while read -r remote; do
+  log -t Magisk "[rclone] mount: $remote => /sdcard/$remote"
   /vendor/bin/rclone-mount "$remote" --daemon
-  log -t Magisk "[rclone]mount: $remote => /sdcard/$remote"
 done
 
 sed -i 's/^description=\(.\{1,4\}| \)\?/description=🚀| /' "$MODULE_PROP"
