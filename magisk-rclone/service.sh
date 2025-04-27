@@ -23,7 +23,7 @@ done
 log -t Magisk "[rclone] system is ready after ${COUNT}. Starting the mounting process."
 
 /vendor/bin/rclone listremotes | sed 's/:$//' | while read -r remote; do
-  log -t Magisk "[rclone] mount: $remote => /sdcard/$remote"
+  log -t Magisk "[rclone] mount: [$remote] => /mnt/rclone-$remote => /sdcard/$remote"
   /vendor/bin/rclone-mount "$remote" --daemon
 done
 
