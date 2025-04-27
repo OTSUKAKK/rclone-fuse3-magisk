@@ -4,7 +4,7 @@ This Magisk module integrates Rclone with FUSE support into Android, allowing yo
 
 ## Features
 
-- **FUSE Integration**: Mount remote storage as local directories using Rclone with FUSE.
+- **FUSE Integration**: Mount remote storage as local directories using Rclone with FUSE (3.17.x).
 - **Automated Boot Mounts**: Automatically mount configured remotes during system boot.
 - **Web GUI Management**: Start and manage the Rclone Web GUI.
 - **Customizable Configuration**: Easily configure Rclone options via environment variables.
