@@ -40,15 +40,8 @@ function start_web() {
   echo "Open the following URL in your browser to access the web GUI:"
   echo "浏览器访问: ${URL} 进行配置"
 
-  # 启动 RClone Web 进程并保存 PID
-  if [ -f "$RCLONE_CONFIG_DIR/htpasswd" ]; then
-    echo "Found htpasswd file. Using it for authentication."
-    nohup /vendor/bin/rclone-web --rc-htpasswd="$RCLONE_CONFIG_DIR/htpasswd" > "$RCLONE_CACHE_DIR/rclone-web.log" 2>&1 &
-  else
-    echo "No htpasswd file found at $RCLONE_CONFIG_DIR. Starting without authentication."
-    nohup /vendor/bin/rclone-web > /dev/stdout 2>&1 &
-    nohup /vendor/bin/rclone-web > "$RCLONE_CACHE_DIR/rclone-web.log" 2>&1 &
-  fi
+  nohup rclone-web > "$RCLONE_CACHE_DIR/rclone-web.log" &
+
   PID=$!
   echo "$PID" > "$RCLONEWEB_PID"
   echo "RClone Web GUI started with PID($PID)."
