@@ -11,14 +11,16 @@ sed -i 's/^description=\(.\{1,4\}| \)\?/description=/' "$MODULE_PROP"
 
 # check and delete old PID file RCLONE_WEB_PID
 if [ -f "$RCLONE_WEB_PID" ]; then
-    log -t Magisk "[rclone] remove old PID file found"
-    rm -f "$RCLONE_WEB_PID"
+  log -t Magisk "[rclone] remove old PID file found"
+  rm -f "$RCLONE_WEB_PID"
 fi
 
 # Wait for the system to boot completely
-until [ "$(getprop sys.boot_completed)" -eq 1 ]; do
-    sleep 2
+COUNT=0
+until { [ "$(getprop sys.boot_completed)" = "1" ] && [ "$(getprop init.svc.bootanim)" = "stopped" ]; } || [ $((COUNT++)) -ge 20 ]; do 
+  sleep 10;
 done
+log -t Magisk "[rclone] READY after ${COUNT}"
 
 /vendor/bin/rclone listremotes | sed 's/:$//' | while read -r remote; do
   /vendor/bin/rclone-mount "$remote" --daemon
