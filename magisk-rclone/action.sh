@@ -13,7 +13,7 @@ function check_stop_web_pid() {
     PID=$(cat "$RCLONEWEB_PID")
     if ps -p "$PID" > /dev/null 2>&1; then
       echo "RClone Web GUI is already running with PID($PID). Stopping it..."
-      kill $PID
+      pkill -P $PID
       rm -f "$RCLONEWEB_PID"
       echo "RClone Web GUI stopped successfully."
       echo "已成功关闭 RClone Web GUI"
@@ -41,7 +41,6 @@ function start_web() {
   echo "浏览器访问: ${URL} 进行配置"
 
   nohup rclone-web > "$RCLONE_CACHE_DIR/rclone-web.log" &
-
   PID=$!
   echo "$PID" > "$RCLONEWEB_PID"
   echo "RClone Web GUI started with PID($PID)."
