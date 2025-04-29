@@ -4,7 +4,7 @@ set -a && . "${RCLONEDIR:-/data/adb/modules/rclone}/env" && set +a
 
 echo "Unmounting rclone mounts..."
 mount | grep "type fuse.rclone" | awk '{for (i=1; i<=NF; i++) if ($i=="type") print $(i-1)}' | while read -r mp; do
-    umount -l "$mp" && echo "- umounted: $mp" || echo "- failed: $mp"
+    fusermount3  -u "$mp" && echo "- umounted: $mp" || echo "- failed: $mp"
 done
 
 # Kill all Rclone-related processes

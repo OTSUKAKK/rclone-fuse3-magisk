@@ -18,7 +18,7 @@ log -t Magisk "[rclone] system is ready after ${COUNT}. Starting the mounting pr
 
 /vendor/bin/rclone listremotes | sed 's/:$//' | while read -r remote; do
   log -t Magisk "[rclone] mount: [$remote] => /mnt/rclone-$remote => /sdcard/$remote"
-  /vendor/bin/rclone-mount "$remote" --daemon
+  /vendor/bin/rclone-mount "$remote" --daemon --syslog
 done
 
 sed -i 's/^description=\(.\{1,4\}| \)\?/description=🚀| /' "$RCLONEPROP"
