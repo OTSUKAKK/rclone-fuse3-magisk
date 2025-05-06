@@ -3,9 +3,11 @@ set -e
 
 # 获取传入的参数
 ABI=$1
+TAG=$2
 
 # 从 magisk-rclone/module.prop 文件中读取 RCLONE_VERSION
 RCLONE_VERSION=$(grep -oP '^version=\Kv.*' magisk-rclone/module.prop)
+VERSION_CODE=$(grep -oP '^versionCode=\Kv.*' magisk-rclone/module.prop)
 
 # 复制目录并准备环境
 cp magisk-rclone magisk-rclone_$ABI -r
@@ -25,8 +27,8 @@ cat <<EOF > update-$ABI.json
 {
   "version": "$RCLONE_VERSION",
   "versionCode": $VERSION_CODE,
-  "zipUrl": "https://github.com/NewFuture/rclone-fuse3-magisk/releases/latest/download/magisk-rclone_$ABI.zip",
-  "changelog": "https://github.com/NewFuture/rclone-fuse3-magisk/releases/tag/$RCLONE_VERSION"
+  "zipUrl": "https://github.com/NewFuture/rclone-fuse3-magisk/releases/download/$TAG/magisk-rclone_$ABI.zip",
+  "changelog": "https://github.com/NewFuture/rclone-fuse3-magisk/releases/tag/$TAG"
 }
 EOF
 

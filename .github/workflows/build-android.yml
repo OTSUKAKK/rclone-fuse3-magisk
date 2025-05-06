@@ -34,6 +34,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
 
+      # Step 2.3 set TagName
+      - name: Set env
+        run: echo "TAG_NAME=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
+
       # Step 3: 设置 Android NDK 环境
       - name: Set up Android NDK
         uses: nttld/setup-ndk@v1
@@ -42,11 +46,11 @@ jobs:
 
       # Step 4.1: 配置交叉编译环境变量并构建 Android 各平台二进制文件
       - name: Build arm64-v8a
-        run: ./build.sh arm64-v8a
+        run: ./build.sh arm64-v8a $TAG_NAME
 
       # Step 4.2: 构建 Android x86_64 二进制文件
       - name: Build x86_64
-        run: ./build.sh x86_64
+        run: ./build.sh x86_64 $TAG_NAME
 
       # Step 5: 上传构建产物
       - name: Upload Android binaries
@@ -62,11 +66,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag_name=$(echo "${GITHUB_REF}" | sed 's/refs\/tags\///')
-          # 上传二进制文件
-          gh release upload "$tag_name" *.zip --clobber
+          # 上传zip文件
+          gh release upload "$TAG_NAME" *.zip --clobber
           # 上传 update.json 文件
-          gh release upload "$tag_name" update*.json --clobber
+          gh release upload "$TAG_NAME" update*.json --clobber
 
 
 
