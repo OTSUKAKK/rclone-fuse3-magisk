@@ -7,7 +7,7 @@ TAG_NAME=${TAG_NAME:-$2}
 
 # 从 magisk-rclone/module.prop 文件中读取 RCLONE_VERSION
 RCLONE_VERSION=$(grep -oP '^version=\Kv.*' magisk-rclone/module.prop)
-VERSION_CODE=$(grep -oP '^versionCode=.*' magisk-rclone/module.prop)
+VERSION_CODE=$(grep -oP '^versionCode=\K.*' magisk-rclone/module.prop)
 
 # 复制目录并准备环境
 cp magisk-rclone magisk-rclone_$ABI -r
