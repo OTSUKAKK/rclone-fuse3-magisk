@@ -1,0 +1,5 @@
+#!/system/bin/sh
+#load environment file
+set -a && . "${RCLONEDIR:-/data/adb/modules/rclone}/env" && set +a
+
+rclone sync "$@"

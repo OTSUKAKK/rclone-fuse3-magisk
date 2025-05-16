@@ -7,6 +7,7 @@ NAME=$1
 
 if [ -z "$NAME" ]; then
   echo "Usage: $0 <name>"
+  echo "name: the name of the rclone remote storage and will be used as the mount point"
   echo "mounts the rclone remote storage to sdcard/<name>"
 else
   shift
