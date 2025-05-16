@@ -2,4 +2,6 @@
 #load environment file
 set -a && . "${RCLONEDIR:-/data/adb/modules/rclone}/env" && set +a
 
+[ -n "$RCLONE_RC" ] && unset RCLONE_RC
+
 rclone sync "$@"
