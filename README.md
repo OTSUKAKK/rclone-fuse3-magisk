@@ -114,8 +114,8 @@ mybox:/Backup "/data/backup" --dry-run
   路径中如有空格，请用英文双引号 `"` 包裹
 - Lines starting with `#` are comments and will be skipped  
   以 `#` 开头的行为注释，会被自动跳过
-- Each sync job runs in background with low priority, logs to `$TMPDIR/rclone_sync.log`  
-  每个同步任务会在后台以低优先级执行，日志输出到 `$TMPDIR/rclone_sync.log`
+- Each sync job runs in background with low priority, logs to `/data/log/rclone_sync.log`  
+  每个同步任务会在后台以低优先级执行，日志输出到 `/data/log/rclone_sync.log`
 
 ---
 

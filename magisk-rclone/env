@@ -1,7 +1,9 @@
+# Default configuration file. Do NOT change this file; 
+# override it in conf/env instead.
 RCLONEDIR="${MODPATH:-/data/adb/modules/rclone}"
 RCLONEPROP="$RCLONEDIR/module.prop"
-TMPDIR="${TMPDIR:-"$RCLONEDIR/.cache"}"
-RCLONEWEB_PID="$TMPDIR/rclone_web.pid"
+RCLONE_LOG_DIR="${RCLONE_LOG_DIR:-/data/log}"
+RCLONEWEB_PID="${RCLONE_LOG_DIR}/rclone_web.pid"
 
 RCLONE_CONFIG_DIR="$RCLONEDIR/conf"
 RCLONE_CONFIG="${RCLONE_CONFIG_DIR}/rclone.conf"

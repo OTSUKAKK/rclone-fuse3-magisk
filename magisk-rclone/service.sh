@@ -30,7 +30,7 @@ sed -i 's/^description=\(.\{1,4\}| \)\?/description=🚀| /' "$RCLONEPROP"
 # rclone sync
 if [ -f "$RCLONESYNC_CONF" ]; then
   L "load sync config from $RCLONESYNC_CONF"
-  SYNC_LOG="$TMPDIR/rclone_sync.log"
+  SYNC_LOG="$RCLONE_LOG_DIR/rclone_sync.log"
   rm -f "$SYNC_LOG"
   while read -r line; do
     # 跳过空行和注释

@@ -40,7 +40,7 @@ function start_web() {
   echo "Open the following URL in your browser to access the web GUI:"
   echo "浏览器访问: ${URL} 进行配置"
 
-  nohup rclone-web > "$RCLONE_CACHE_DIR/rclone-web.log" &
+  nohup rclone-web > "$RCLONE_LOG_DIR/rclone-web.log" &
   PID=$!
   echo "$PID" > "$RCLONEWEB_PID"
   echo "RClone Web GUI started with PID($PID)."
