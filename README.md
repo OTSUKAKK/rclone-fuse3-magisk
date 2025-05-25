@@ -81,7 +81,7 @@ rclone-kill-all
 ---
 
 
-## Rclone Sync Configuration / Rclone 同步配置说明
+## Rclone Sync Configuration / Rclone 同步配置说明 (WIP)
 
 ### Sync Config File (`RCLONESYNC_CONF`) / 同步配置文件
 

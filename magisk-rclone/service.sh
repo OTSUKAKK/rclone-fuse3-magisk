@@ -25,24 +25,13 @@ L "system is ready after ${COUNT}. Starting the mounting process."
   /vendor/bin/rclone-mount "$remote" --daemon
 done
 
+L "all remotes mounted successfully."
+
 sed -i 's/^description=\(.\{1,4\}| \)\?/description=🚀| /' "$RCLONEPROP"
 
 # rclone sync
-if [ -f "$RCLONESYNC_CONF" ]; then
-  L "load sync config from $RCLONESYNC_CONF"
-  SYNC_LOG="$RCLONE_LOG_DIR/rclone_sync.log"
-  rm -f "$SYNC_LOG"
-  while read -r line; do
-    # 跳过空行和注释
-    [ -z "$line" ] && continue
-    echo "$line" | grep -qE '^\s*#' && continue
-    # 逐行解析
-    eval set -- $line
-    options="$@"
-    L "sync $@"
-    nice -n 19 ionice -c3 /vendor/bin/rclone sync "$@" >> "$SYNC_LOG" 2>&1 > &
-  done < "$RCLONESYNC_CONF"
-  L "sync process started, log: $SYNC_LOG"
-fi
+nice -n 19 ionice -c3 "$MODPATH/sync.service.sh" &
+echo $! > "$RCLONESYNC_PID"
+L "sync.service.sh started, PID: $(cat "$RCLONESYNC_PID")"
 
 L "service script finished!"
