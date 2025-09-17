@@ -121,31 +121,8 @@ mybox:/Backup "/data/backup" --dry-run
 
 ## Automated Updates / 自动更新
 
-This repository includes automated workflows to keep Rclone up to date:
-
-### Daily Version Checking / 每日版本检查
-
-- **Workflow**: `.github/workflows/check-rclone-update.yml`
-- **Schedule**: Runs daily at 02:00 UTC (北京时间上午10点)
-- **Function**: Automatically checks for new Rclone releases and creates pull requests
-
-### How it Works / 工作原理
-
-1. **Daily Check** / 每日检查: The workflow fetches the latest release from the [Rclone GitHub repository](https://github.com/rclone/rclone)
-2. **Version Comparison** / 版本比较: Compares with the current version in `magisk-rclone/module.prop`
-3. **Automatic PR** / 自动PR: If a new version is found, it:
-   - Updates the version in `module.prop`
-   - Increments the `versionCode`
-   - Creates a pull request with release information
-   - Includes testing checklist and release notes
-
-### Manual Trigger / 手动触发
-
-You can manually trigger the update check by:
-
-1. Go to **Actions** tab in GitHub
-2. Select "Check Rclone Updates" workflow
-3. Click "Run workflow"
+Daily automated workflow checks for new Rclone releases and creates pull requests with version updates.  
+每日自动检查 Rclone 新版本并创建更新 PR。
 
 ---
 
