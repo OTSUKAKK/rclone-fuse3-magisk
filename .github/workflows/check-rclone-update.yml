@@ -124,7 +124,7 @@ jobs:
             <summary>Click to expand release notes</summary>
             
             ```
-            Release notes from upstream Rclone repository
+            $(cat /tmp/release_notes.txt)
             ```
             
             </details>
