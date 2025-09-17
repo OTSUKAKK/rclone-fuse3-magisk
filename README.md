@@ -119,6 +119,13 @@ mybox:/Backup "/data/backup" --dry-run
 
 ---
 
+## Automated Updates / 自动更新
+
+Daily automated workflow checks for new Rclone releases and creates pull requests with version updates.  
+每日自动检查 Rclone 新版本并创建更新 PR。
+
+---
+
 ## Contributing / 贡献
 
 Contributions are welcome! Please ensure that your changes are well-documented and tested.  
